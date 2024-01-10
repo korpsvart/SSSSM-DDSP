@@ -3,7 +3,7 @@ import numpy as np
 import torch
 from diffsynth.modules.generators import SineOscillator
 from diffsynth.processor import Add, Mix
-from diffsynth.modules.fm import FM2, FM3
+#from diffsynth.modules.fm import FM2, FM3
 from diffsynth.modules.envelope import ADSREnvelope
 from diffsynth.synthesizer import Synthesizer, FX
 from diffsynth.modules.harmor import Harmor

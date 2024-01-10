@@ -7,16 +7,16 @@ defaults:
   - override /synth: h2of.yaml
   - override /loss: switch_spec_fro.yaml
 
-name: null
+name: first_fx_env_training_cpu
 
-id_base: /home/n_masuda/Datasets/diffsynth-wide
+id_base: /mnt/d/stmae/ssssm-ddsp/Datasets/iid_data
 
 data:
   data_cfgs:
     id: 
       base_dir: ${id_base}/${synth.name}
     ood: 
-      base_dir: /home/n_masuda/Datasets/nsynth-train
+      base_dir: /mnt/d/stmae/ssssm-ddsp/Datasets/nsynth-train
   batch_size: 64
   train_key: id
 

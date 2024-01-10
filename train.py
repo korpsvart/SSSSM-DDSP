@@ -9,8 +9,8 @@ def main(cfg):
     from plot import AudioLogger, SaveEvery
     import warnings
     from pytorch_lightning.callbacks import ModelCheckpoint
-    from diffsynth.model import EstimatorSynth, EstimatorSynthFX
-    from diffsynth.data import IdOodDataModule, MultiDataModule
+    from diffsynth.model import EstimatorSynth
+    from diffsynth.data import IdOodDataModule, MultiDataModule, WaveParamDataset
     pl.seed_everything(cfg.seed, workers=True)
     warnings.simplefilter('ignore', RuntimeWarning)
     # load model
@@ -19,7 +19,9 @@ def main(cfg):
     tb_logger = pl.loggers.TensorBoardLogger("tb_logs", "", default_hp_metric=False, version='')
     mf_logger = pl.loggers.MLFlowLogger(cfg.name, tracking_uri="file://" + hydra.utils.get_original_cwd() + "/mlruns")
     # load data
+    print(cfg.data)
     datamodule = hydra.utils.instantiate(cfg.data)
+    print("aoooo")
     # trainer setup
     # keep every checkpoint_every epochs and best epoch
     checkpoint_callback = ModelCheckpoint(dirpath=os.getcwd(), monitor=cfg.monitor, save_top_k=-1, save_last=False, every_n_epochs=cfg.checkpoint_every)

@@ -28,7 +28,7 @@ if __name__ == "__main__":
     conf = OmegaConf.load(args.synth_conf)
     with open_dict(conf):
         conf.sample_rate=args.sr
-    synth = construct_synth_from_conf(conf).to('cuda')
+    synth = construct_synth_from_conf(conf).to('cpu')
 
     audio_dir, param_dir = make_dirs(args.dataset_dir, conf.name)
 
@@ -47,7 +47,7 @@ if __name__ == "__main__":
             while True:
                 if break_flag:
                     break
-                audio, output = synth.uniform(args.batch_size, n_samples, 'cuda')
+                audio, output = synth.uniform(args.batch_size, n_samples, 'cpu')
                 params = {k: output[synth.dag_summary[k]].cpu() for k in save_params}
                 for j in range(args.batch_size):
                     if count >= args.data_size:
