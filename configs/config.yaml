@@ -17,7 +17,7 @@ defaults:
 name: null
 sample_rate: 16000
 monitor: "val_1/lsd"
-checkpoint_every: 50
+checkpoint_every: 25
 seed: 0
 ckpt: null
 sep_fx: false

@@ -1,5 +1,7 @@
 # @package _global_
 
+#for local training or just torchscript tracing
+
 defaults:
   - override /trainer: default.yaml
   - override /model: default.yaml
@@ -7,7 +9,7 @@ defaults:
   - override /synth: h2of.yaml
   - override /loss: switch_spec_fro.yaml
 
-name: first_fx_env_training_cpu
+name: first_fx_env_training_colab_gpu
 
 id_base: /mnt/d/stmae/ssssm-ddsp/Datasets/iid_data
 
@@ -16,7 +18,7 @@ data:
     id: 
       base_dir: ${id_base}/${synth.name}
     ood: 
-      base_dir: /mnt/d/stmae/ssssm-ddsp/Datasets/nsynth-train
+      base_dir: /mnt/d/stmae/ssssm-ddsp/Datasets/nsynth-train-redist
   batch_size: 64
   train_key: id
 

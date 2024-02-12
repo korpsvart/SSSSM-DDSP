@@ -34,8 +34,12 @@ class WaveParamDataset(Dataset):
         if params:
             self.param_dir = os.path.join(base_dir, 'param')
             assert os.path.exists(self.param_dir)
-        raw_files = sorted(glob.glob(os.path.join(self.audio_dir, '*.wav')))
-        self.basenames = [os.path.basename(rf)[:-4] for rf in raw_files]
+        
+        #I've adjusted this part because Google Colab doesn't work
+        #with directories having a large amount of files
+        #Therefore we need to split the files into many subdirectories
+        raw_files = sorted(glob.glob(os.path.join(self.audio_dir, '**/*.wav'), recursive=True)) #Find also files in subdirs
+        self.basenames = [os.path.basename(os.path.dirname(rf)) + '/' + os.path.basename(rf)[:-4] for rf in raw_files] #Append also the subdir names, to retrieve the corresponding params
         print('{0} files in dataset'.format(len(self.basenames)))
         self.length = length
         self.sample_rate = sample_rate
@@ -78,12 +82,12 @@ class FilteredNsynthDataset(Dataset):
     def __init__(self, base_dir, filter_args, sample_rate=16000, length=4.0, f0=False):
         self.base_dir = base_dir
         self.audio_dir = os.path.join(base_dir, 'audio')
-        self.raw_files = sorted(glob.glob(os.path.join(self.audio_dir, '*.wav')))
+        self.raw_files = sorted(glob.glob(os.path.join(self.audio_dir, '**/*.wav'), recursive=True))
         self.length = length
         self.sample_rate = sample_rate
         # load json file that comes with nsynth dataset
         print('{0} files before filtering'.format(len(self.raw_files)))
-        with open(os.path.join(self.base_dir, 'examples.json')) as f:
+        with open(os.path.join(self.base_dir, 'examples-redist.json')) as f:
             self.json_dict = json.load(f)
         # restrict the dataset to some categories
         self.filter_dataset(**filter_args)
@@ -118,7 +122,13 @@ class FilteredNsynthDataset(Dataset):
     def __getitem__(self, index):
         data = {}
         note = self.filtered_dict[self.filtered_keys[index]]
-        file_name = os.path.join(self.audio_dir, note['note_str']+'.wav')
+
+        #We need to identify the folder too in our version with
+        #the redistributed hierarchy.
+        #With the modified JSON it's enough to
+        #Add the subdir field to the filename
+        file_name = os.path.join(self.audio_dir, note['subdir'], note['note_str']+'.wav')
+        print(file_name) # Print the filename (only for torchscript tracing, remove later)
         data['audio'], _sr = librosa.load(file_name, sr=self.sample_rate, duration=self.length)
         # f0
         if self.f0:
@@ -217,7 +227,8 @@ class MultiDataModule(pl.LightningDataModule):
         dset_train, dset_valid, dset_test = random_split(dataset, lengths=split_sizes, generator=torch.Generator().manual_seed(self.seed))
         return {'train': dset_train, 'valid': dset_valid, 'test': dset_test}
 
-    def setup(self, stage):
+    def setup(self, stage=None):
+        print("SETTING UP DATAMODULE")
         for key, dataset in self.datasets.items():
             if len(dataset) > self.max_dat_size:
                 rng = np.random.default_rng(self.seed)
@@ -258,3 +269,12 @@ class MultiDataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         return [DataLoader(dat['test'], batch_size=self.batch_size, num_workers=self.num_workers) for dat in self.dats.values()]
+
+
+    def get_random_sample(self):
+        #Load just one random sample
+        #Used for torchscript tracing
+        print(self.dats)
+        random_loader = DataLoader(self.dats[self.train_key]['train'], batch_size=1, shuffle=True)
+        for batch in random_loader:
+            return batch  #Return the first (and only) batch    
