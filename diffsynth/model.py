@@ -60,7 +60,6 @@ class EstimatorSynth(pl.LightningModule):
                     v.register_hook(save_grad(k))
 
     def forwardSynth(self, conditioning):
-        #for synth (original version)
         """
         Args:
             conditioning (dict): {'PARAM NAME': Conditioning Tensor, ...}
@@ -89,18 +88,7 @@ class EstimatorSynth(pl.LightningModule):
             self.log_param_grad(params_dict)
         
         synth_params = self.synth.calculate_params(params_dict)
-        return synth_params
-
-    def forward(self, conditioning):
-        #for tracing, change back later
-        """
-        Args:
-            conditioning (dict): {'PARAM NAME': Conditioning Tensor, ...}
-
-        Returns:
-            torch.Tensor: audio
-        """
-        return self.get_params(conditioning)          
+        return synth_params      
 
     def train_losses(self, output, target, loss_w=None):
         loss_dict = {}
