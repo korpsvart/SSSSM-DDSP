@@ -1,4 +1,0 @@
-python gen_dataset.py iid_data configs/synth/h2of_fx_env.yaml
-
-
-python train.py experiment=exp synth=h2of_fx_env loss=only_param trainer.max_epochs=50

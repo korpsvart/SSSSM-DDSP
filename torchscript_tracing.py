@@ -85,10 +85,6 @@ def trace(model, ckpt, datamodule):
 
     print("saved!")
 
-    #You can load the traced model later using:
-    #loaded_traced_model = torch.jit.load('traced_model.pt')
-
-
 
 import hydra
 

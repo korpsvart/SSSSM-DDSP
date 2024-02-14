@@ -59,7 +59,7 @@ class EstimatorSynth(pl.LightningModule):
                 if v.requires_grad == True:
                     v.register_hook(save_grad(k))
 
-    def forwardSynth(self, conditioning):
+    def forward(self, conditioning):
         """
         Args:
             conditioning (dict): {'PARAM NAME': Conditioning Tensor, ...}

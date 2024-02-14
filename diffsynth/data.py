@@ -128,7 +128,7 @@ class FilteredNsynthDataset(Dataset):
         #With the modified JSON it's enough to
         #Add the subdir field to the filename
         file_name = os.path.join(self.audio_dir, note['subdir'], note['note_str']+'.wav')
-        print(file_name) # Print the filename (only for torchscript tracing, remove later)
+        #print(file_name) # Print the filename (only for torchscript tracing or audio exporting if you want to know which file was used, remove later)
         data['audio'], _sr = librosa.load(file_name, sr=self.sample_rate, duration=self.length)
         # f0
         if self.f0:
