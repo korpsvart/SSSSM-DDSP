@@ -1,56 +1,17 @@
-# Repository for Semi-Supervised Synthesizer Sound Matching with Differentiable DSP
+# Running training on Google Colab
 
-Accompanying website: 
 
-## Files
+For general informations look at the original repository. This branch contains code that can be used to train the model on Google Colab, plus some other useful scripts.
 
-- gen_dataset.py
-	- Used for dataset generation
-- train.py
-	- Training script
-- test.py
-	- Testing script
-- configs
-	- hydra configs for experiments
+The problem of Colab is that you must load the data from Google Drive but if too many files are in the same folder it will time-out.
+You can use `divide_datasets.py` to divide a large dataset into many sub-directories. Do this for both the in domain and the out of domain dataset (Magenta NSynth Dataset).
+Then you must update the JSON of the out of domain dataset to account for the subdirectory information. You can do this with the `update_nsynth_json.py` script.
 
-## Usage
 
-### Dataset generation
+The Jupyter Notebook `SSSSM_DDSP_training.ipynb` shows an example of how we can then run the training on Colab, once the process above is completed.
 
-Specify the synth architecture from configs/synth (in this case, h2of_fx_env which is the FX-Env setting from the paper).
 
-```
-python gen_dataset.py [generated in-domain dataset dir] configs/synth/h2of_fx_env.yaml
-```
+## Export model via torchscript
 
-### Training
-
-Edit configs/experiments/exp with dataset directory (id_base, data_cfgs.ood.base_dir).
-
-Train a model with the `Synth` setting:
-
-```
-python train.py experiment=exp synth=h2of_fx_env
-```
-
-Change the loss function to parameter loss only (`P-loss` setting):
-
-```
-python train.py experiment=exp synth=h2of_fx_env loss=only_param
-```
-
-Resume with the `Real` setting:
-
-```
-python train.py experiment=exp synth=h2of_fx_env data.train_key=ood ckpt=[checkpoint file at 200th epoch of Synth]
-```
-
-Resume with the `Even` setting:
-
-```
-python train.py experiment=exp synth=h2of_fx_env data.train_key=id loss=even_spec_fro ckpt=[checkpoint file at 50th epoch of P-loss] trainer.max_epochs=200
-```
-
-```
-python train.py experiment=exp synth=h2of_fx_env data.train_key=[id,ood] loss=even_spec_fro ckpt=[checkpoint file of the above run]
-```
+If you want to export a model that will directly accept audio input and output a set of static parameters via Torchscript check out the branch `pytorch_scripting` branch and run the `torchscript_tracing.py`.
+Details on the command to run are inside the file.
